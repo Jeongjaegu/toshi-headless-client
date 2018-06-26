@@ -3,9 +3,11 @@ package com.bakkenbaeck.token.headless;
 
 public final class TokenHeadlessClientConfiguration {
     private String server;
-    private String token_ethereum_service_url;
-    private String token_id_service_url;
-    private String token_exchange_service_url;
+    private String toshi_id_service_url;
+    private String toshi_exchange_service_url;
+    private String toshi_ethereum_service_url;
+    private String network;
+    private String networkId;
     private String seed;
     private String store;
     private String username;
@@ -119,29 +121,53 @@ public final class TokenHeadlessClientConfiguration {
         this.storage = storage;
     }
 
-    public String getToken_ethereum_service_url() {
-        return token_ethereum_service_url;
+    public String getNetwork() {
+        return this.network;
     }
 
-    public void setToken_ethereum_service_url(String token_ethereum_service_url) {
-        this.token_ethereum_service_url = token_ethereum_service_url;
+    public void setNetwork(String network) {
+        if (network == null) { return; }
+        if (network.startsWith("$")) {
+            network = this.getEnvVariable(network.substring(1));
+        }
+        this.network = stripQuotes(network);
     }
 
-    public String getToken_id_service_url() {
-        return token_id_service_url;
+    public String getNetworkId() {
+        return this.networkId;
     }
 
-    public void setToken_id_service_url(String token_id_service_url) {
-        this.token_id_service_url = token_id_service_url;
+    public void setNetworkId(String networkId) {
+        if (networkId == null) { return; }
+        if (networkId.startsWith("$")) {
+            networkId = this.getEnvVariable(networkId.substring(1));
+        }
+        this.networkId = stripQuotes(networkId);
+    }
+
+    public String getToshi_id_service_url() {
+        return toshi_id_service_url;
+    }
+
+    public void setToshi_id_service_url(String toshi_id_service_url) {
+        this.toshi_id_service_url = toshi_id_service_url;
     }
 
 
-    public String getToken_exchange_service_url() {
-        return token_exchange_service_url;
+    public String getToshi_exchange_service_url() {
+        return toshi_exchange_service_url;
     }
 
-    public void setToken_exchange_service_url(String token_exchange_service_url) {
-        this.token_exchange_service_url = token_exchange_service_url;
+    public void setToshi_exchange_service_url(String toshi_exchange_service_url) {
+        this.toshi_exchange_service_url = toshi_exchange_service_url;
+    }
+
+    public String getToshi_ethereum_service_url() {
+        return toshi_ethereum_service_url;
+    }
+
+    public void setToshi_ethereum_service_url(String toshi_ethereum_service_url) {
+        this.toshi_ethereum_service_url = toshi_ethereum_service_url;
     }
 
     public void setIs_public(Boolean is_public) {

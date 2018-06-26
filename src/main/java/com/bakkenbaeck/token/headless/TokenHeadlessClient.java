@@ -49,7 +49,10 @@ class TokenHeadlessClient {
         String stage = System.getenv("STAGE");
         if (stage == null) {
             stage = "development";
+        } else {
+            stage = stage.toLowerCase();
         }
+
         String configPath = "config/" + stage + ".yml";
         if( args.length == 1 ) {
             configPath = args[0];
@@ -136,10 +139,35 @@ class TokenHeadlessClient {
         JedisPool jedisPool = new JedisPool(poolConfig, config.getRedis().getHost(), config.getRedis().getPort(), config.getRedis().getTimeout(), config.getRedis().getPassword());
 
         // -- eth service
-        EthService ethService = new EthService(wallet, config.getToken_ethereum_service_url());
+        String ethereumServiceURL = config.getToshi_ethereum_service_url();
+        if (ethereumServiceURL == null) {
+            String network = config.getNetwork();
+            if (network == null) {
+                if (stage.equals("production")) {
+                    network = "mainnet";
+                } else {
+                    network = "ropsten";
+                }
+            } else {
+                network = network.toLowerCase();
+            }
+            if (network.equals("mainnet")) {
+                ethereumServiceURL = "https://ethereum.service.toshi.org";
+            } else if (network.equals("ropsten") || network.equals("testnet")) {
+                ethereumServiceURL = "https://toshi-eth-service-ropsten.herokuapp.com";
+            } else if (network.equals("kovan")) {
+                ethereumServiceURL = "https://toshi-eth-service-kovan.herokuapp.com";
+            } else if (network.equals("rinkeby")) {
+                ethereumServiceURL = "https://toshi-eth-service-rinkeby.herokuapp.com";
+            } else {
+                System.out.println("Error: invalid NETWORK '" + config.getNetwork() + "'. Valid values are: 'mainnet', 'ropsten', 'kovan', 'rinkeby'");
+                return;
+            }
+        }
+        EthService ethService = new EthService(wallet, ethereumServiceURL);
 
         // -- id service
-        IdService idService = new IdService(wallet, config.getToken_id_service_url());
+        IdService idService = new IdService(wallet, config.getToshi_id_service_url());
 
         final String username = config.getUsername();
         if (username == null || !Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]{2,59}$").matcher(username).matches()) {
